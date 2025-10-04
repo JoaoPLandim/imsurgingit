@@ -1,21 +1,62 @@
 @import "tailwindcss";
 
 :root {
+  /* Primary color palette */
+  --jet: #363635ff;
+  --ebony: #595a4aff;
+  --green-yellow: #b0fe76ff;
+  --light-green: #81e979ff;
+  --cambridge-blue: #8fbb99ff;
+  /* color mappings */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: var(--jet);
+  --primary: var(--green-yellow);
+  --secondary: var(--light-green);
+  --accent: var(--cambridge-blue);
+  --muted: var(--ebony);
+  --border: var(--ebony);
+  --input: var(--cambridge-blue);
+  --ring: var(--green-yellow);
+  --card: #ffffff;
+  --card-foreground: var(--jet);
+  --popover: #ffffff;
+  --popover-foreground: var(--jet);
+  --primary-foreground: var(--jet);
+  --secondary-foreground: var(--jet);
+  --muted-foreground: var(--ebony);
+  --accent-foreground: var(--jet);
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: var(--jet);
     --foreground: #ededed;
+    --card: var(--ebony);
+    --card-foreground: #ededed;
+    --popover: var(--ebony);
+    --popover-foreground: #ededed;
+    --primary-foreground: var(--jet);
+    --secondary-foreground: var(--jet);
+    --muted-foreground: #a1a1aa;
+    --accent-foreground: var(--jet);
+    --border: var(--ebony);
+    --input: var(--ebony);
   }
 }
 
@@ -23,4 +64,97 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-secondary {
+  color: var(--secondary);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.bg-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.bg-muted {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.border-primary {
+  border-color: var(--primary);
+}
+
+.border-secondary {
+  border-color: var(--secondary);
+}
+
+.border-accent {
+  border-color: var(--accent);
+}
+
+.border-muted {
+  border-color: var(--border);
+}
+
+button, .btn {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+  transition: all 0.2s ease;
+}
+
+button:hover, .btn:hover {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+}
+
+input, textarea, select {
+  background-color: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px rgba(176, 254, 118, 0.2);
+}
+
+a {
+  color: var(--accent);
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary);
+}
+
+.card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
 }
