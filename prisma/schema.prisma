@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,34 +20,32 @@ model User {
   userCourses UserCourse[]
 }
 
-model Transcript {
-  id            Int     @id @default(autoincrement())
-  fileName      String
-  filePath      String
-  content       String? //AI gets stuff
-  analysisData  String? //JSON string of AI stuff
-  uploadedAt    DateTime @default(now())
-
-  // Foreign keys
-  userId        Int
-  courseId      Int?
-
-  //Relationships
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course        Course? @relation(fields: [courseId], references: [id])
-}
-
 model Course {
-  id          Int   @id @default(autoincrement())
-  courseCode  String @unique
+  id          Int      @id @default(autoincrement())
+  courseCode  String   @unique // "CMPT 120"
   courseName  String
-  department  String
+  department  String   // "CMPT", "MATH", etc.
   credits     Int
   description String?
+  program     String?  // "Computing Science", "Mathematics"
 
   // Relationships
   userCourses UserCourse[]
   transcripts Transcript[]
+}
+
+model Transcript {
+  id            Int     @id @default(autoincrement())
+  fileName      String
+  filePath      String
+  content       String?
+  analysisData  String?
+  uploadedAt    DateTime @default(now())
+  userId        Int
+  courseId      Int?
+
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course        Course? @relation(fields: [courseId], references: [id])
 }
 
 model UserCourse {
@@ -60,7 +55,6 @@ model UserCourse {
   semester    String
   year        Int
 
-  // Relationships
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
