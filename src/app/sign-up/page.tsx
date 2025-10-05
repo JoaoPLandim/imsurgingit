@@ -1,7 +1,9 @@
 'use client';
 
+import { signUp } from "@/lib/authService";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
     const [formData, setFormData] = useState({
@@ -10,6 +12,8 @@ export default function SignUp() {
         email: "",
         password: "",
     });
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ 
@@ -18,13 +22,33 @@ export default function SignUp() {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle sign up logic here
-        console.log(formData);
-        alert("Sign up submitted!");
+        setLoading(true);
+        
+        try {
+            const result = await signUp(formData.email, formData.password, formData.name, formData.surname);
+            alert("Sign up successful!");
+            router.push("/planner");
+        } catch (error: any) {
+            switch (error.code) {
+                case "auth/email-already-in-use":
+                    alert("Email is already in use.");
+                    break;
+                case "auth/invalid-email":
+                    alert("Invalid email address.");
+                    break;
+                case "auth/weak-password":
+                    alert("Password is too weak.");
+                    break;
+                default:
+                    alert(error.message || "Sign up failed.");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
-
+    
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <div className="bg-card border border-border rounded-lg shadow-lg p-8 w-full max-w-md">
@@ -100,9 +124,10 @@ export default function SignUp() {
                     
                     <button
                         type="submit"
-                        className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-secondary transition-colors font-medium mt-6"
+                        disabled={loading}
+                        className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-secondary transition-colors font-medium mt-6 disabled:opacity-50"
                     >
-                        Sign Up
+                        {loading ? "Signing Up..." : "Sign Up"}
                     </button>
                 </form>
                 

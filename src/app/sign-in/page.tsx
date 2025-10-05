@@ -1,17 +1,44 @@
 'use client';
 
+import { signIn } from "@/lib/authService";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle sign in logic here
-        console.log({ email, password });
-        alert("Sign in submitted!");
+        setLoading(true);
+        
+        try {
+            await signIn(email, password);
+            alert("Sign in successful!");
+            router.push("/planner");
+        } catch (error: any) {
+            switch (error.code) {
+                case "auth/user-not-found":
+                    alert("No account found with that email.");
+                    break;
+                case "auth/wrong-password":
+                    alert("Incorrect password.");
+                    break;
+                case "auth/invalid-email":
+                    alert("Invalid email address.");
+                    break;
+                case "auth/invalid-credential":
+                    alert("Invalid email or password.");
+                    break;
+                default:
+                    alert(error.message || "Sign in failed.");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -55,9 +82,10 @@ export default function SignIn() {
                     
                     <button
                         type="submit"
-                        className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-secondary transition-colors font-medium mt-6"
+                        disabled={loading}
+                        className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-secondary transition-colors font-medium mt-6 disabled:opacity-50"
                     >
-                        Sign In
+                        {loading ? "Signing In..." : "Sign In"}
                     </button>
                 </form>
                 
