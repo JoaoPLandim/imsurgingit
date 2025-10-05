@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         const courses = await sfuApi.getCourses(year, term, departmentMatch[0].toUpperCase());
         sfuCourseData = courses.slice(0, 10); // Limit to first 10 courses to avoid token limits
       } catch (error) {
-        console.log('Could not fetch SFU course data, continuing without it');
+        console.log('Could not fetch SFU course data, continuing without it:', error.message);
       }
     }
 
@@ -29,9 +29,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ response });
   } catch (error: any) {
     console.error("Error generating response:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to generate response" },
-      { status: 500 }
-    );
+    
+    // Return a user-friendly error message
+    let errorMessage = "I'm having trouble processing your request right now. ";
+    
+    if (error.message.includes('API Error')) {
+      errorMessage += "There seems to be an issue with the AI service. Please try again in a moment.";
+    } else if (error.message.includes('Invalid response structure')) {
+      errorMessage += "I received an unexpected response. Please try rephrasing your question.";
+    } else {
+      errorMessage += "Please try again or contact support if the issue persists.";
+    }
+    
+    return NextResponse.json({ response: errorMessage });
   }
 }

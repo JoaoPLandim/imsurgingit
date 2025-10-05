@@ -1,11 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
-import fs from "fs";
-
-// Read your image file and encode it as base64
-const imagePath = "./public/file.svg"; // Change to your image path
-const imageBuffer = fs.readFileSync(imagePath);
-const imageBase64 = imageBuffer.toString("base64");
-
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 if (!GEMINI_API_KEY) {
@@ -49,7 +41,20 @@ ${transcriptText}`
       })
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API Error:', response.status, errorText);
+      throw new Error(`API Error: ${response.status} - ${errorText}`);
+    }
+
     const data = await response.json();
+    console.log('Gemini API Response:', JSON.stringify(data, null, 2));
+
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      console.error('Unexpected API response structure:', data);
+      throw new Error('Invalid response structure from Gemini API');
+    }
+
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error('Error analyzing transcript:', error);
@@ -96,7 +101,20 @@ Keep responses conversational but informative.`
       })
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API Error:', response.status, errorText);
+      throw new Error(`API Error: ${response.status} - ${errorText}`);
+    }
+
     const data = await response.json();
+    console.log('Gemini API Response:', JSON.stringify(data, null, 2));
+
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      console.error('Unexpected API response structure:', data);
+      throw new Error('Invalid response structure from Gemini API');
+    }
+
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error('Error generating advice:', error);
@@ -142,7 +160,20 @@ Please format your response as a JSON object with these fields:
       })
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API Error:', response.status, errorText);
+      throw new Error(`API Error: ${response.status} - ${errorText}`);
+    }
+
     const data = await response.json();
+    console.log('Gemini API Response:', JSON.stringify(data, null, 2));
+
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      console.error('Unexpected API response structure:', data);
+      throw new Error('Invalid response structure from Gemini API');
+    }
+
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error('Error analyzing transcript image:', error);
