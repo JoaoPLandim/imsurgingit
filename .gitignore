@@ -32,12 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-
 # database files
 *.db
 *.db-journal
 prisma/dev.db*
-
 # vercel
 .vercel
 
@@ -45,4 +43,5 @@ prisma/dev.db*
 *.tsbuildinfo
 next-env.d.ts
 
-/src/generated/prisma
+# api key
+.env
