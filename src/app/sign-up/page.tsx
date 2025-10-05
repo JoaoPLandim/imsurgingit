@@ -27,11 +27,15 @@ export default function SignUp() {
         setLoading(true);
         
         try {
-            const result = await signUp(formData.email, formData.password, formData.name, formData.surname);
+            await signUp(formData.email, formData.password, formData.name, formData.surname);
             alert("Sign up successful!");
             router.push("/planner");
-        } catch (error: any) {
-            switch (error.code) {
+        } catch (error: unknown) {
+            const firebaseError = error as { code?: string; message?: string };
+            const errorCode = firebaseError?.code;
+            const errorMessage = firebaseError?.message || "Sign up failed.";
+            
+            switch (errorCode) {
                 case "auth/email-already-in-use":
                     alert("Email is already in use.");
                     break;
@@ -42,7 +46,7 @@ export default function SignUp() {
                     alert("Password is too weak.");
                     break;
                 default:
-                    alert(error.message || "Sign up failed.");
+                    alert(errorMessage);
             }
         } finally {
             setLoading(false);

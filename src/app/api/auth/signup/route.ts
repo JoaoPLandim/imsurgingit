@@ -25,10 +25,11 @@ export async function POST(req: Request) {
     await setDoc(doc(db, "users", firebaseUid), userData);
 
     return NextResponse.json({ success: true, user: userData });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Signup error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Signup failed";
     return NextResponse.json(
-      { error: error.message || "Signup failed" },
+      { error: errorMessage },
       { status: 400 }
     );
   }

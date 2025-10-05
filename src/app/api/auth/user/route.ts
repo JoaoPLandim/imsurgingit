@@ -49,10 +49,11 @@ export async function GET(req: Request) {
         userCourses
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching user:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch user";
     return NextResponse.json(
-      { error: error.message || "Failed to fetch user" },
+      { error: errorMessage },
       { status: 400 }
     );
   }

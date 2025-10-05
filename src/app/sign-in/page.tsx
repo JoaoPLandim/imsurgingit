@@ -19,8 +19,12 @@ export default function SignIn() {
             await signIn(email, password);
             alert("Sign in successful!");
             router.push("/planner");
-        } catch (error: any) {
-            switch (error.code) {
+        } catch (error: unknown) {
+            const firebaseError = error as { code?: string; message?: string };
+            const errorCode = firebaseError?.code;
+            const errorMessage = firebaseError?.message || "Sign in failed.";
+            
+            switch (errorCode) {
                 case "auth/user-not-found":
                     alert("No account found with that email.");
                     break;
@@ -34,7 +38,7 @@ export default function SignIn() {
                     alert("Invalid email or password.");
                     break;
                 default:
-                    alert(error.message || "Sign in failed.");
+                    alert(errorMessage);
             }
         } finally {
             setLoading(false);
@@ -91,7 +95,7 @@ export default function SignIn() {
                 
                 <div className="text-center mt-6">
                     <p className="text-muted-foreground text-sm">
-                        Don't have an account?{" "}
+                        Don&apos;t have an account?{" "}
                         <Link href="/sign-up" className="text-accent hover:text-primary transition-colors underline">
                             Sign up
                         </Link>
