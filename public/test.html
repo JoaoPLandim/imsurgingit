@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete API Test Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-left: 3px solid #007bff; max-height: 400px; overflow-y: auto; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Complete API Test Dashboard</h1>
+    
+    <div class="test-section">
+        <h3>Database Test</h3>
+        <button onclick="testDatabase()">Test Database Connection</button>
+        <div id="db-result" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>SFU API Tests</h3>
+        <button onclick="testSFUDepartments()">Test SFU Departments</button>
+        <button onclick="testSFUCourses()">Test SFU Courses (CMPT)</button>
+        <div id="sfu-result" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Schedule Generation Tests</h3>
+        <button onclick="testScheduleGeneration('CMPT')">Generate CMPT Schedule</button>
+        <button onclick="testScheduleGeneration('MATH')">Generate MATH Schedule</button>
+        <button onclick="testScheduleGeneration('PHYS')">Generate PHYS Schedule</button>
+        <div id="schedule-result" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Chat API Tests</h3>
+        <button onclick="testChat('I want to study computer science')">Test CMPT Chat</button>
+        <button onclick="testChat('I want to study mathematics')">Test MATH Chat</button>
+        <button onclick="testChat('Tell me about physics')">Test PHYS Chat</button>
+        <div id="chat-result" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        async function testDatabase() {
+            const result = document.getElementById('db-result');
+            result.style.display = 'block';
+            result.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('/api/test-db');
+                const data = await response.json();
+                result.className = 'result';
+                result.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function testSFUDepartments() {
+            const result = document.getElementById('sfu-result');
+            result.style.display = 'block';
+            result.innerHTML = 'Testing SFU Departments...';
+            
+            try {
+                const response = await fetch('/api/sfu/departments');
+                const data = await response.json();
+                result.className = 'result';
+                result.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function testSFUCourses() {
+            const result = document.getElementById('sfu-result');
+            result.style.display = 'block';
+            result.innerHTML = 'Testing SFU Courses...';
+            
+            try {
+                const response = await fetch('/api/sfu/courses?department=CMPT');
+                const data = await response.json();
+                result.className = 'result';
+                result.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function testScheduleGeneration(department) {
+            const result = document.getElementById('schedule-result');
+            result.style.display = 'block';
+            result.innerHTML = `Generating ${department} schedule...`;
+            
+            try {
+                const response = await fetch('/api/schedule/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        department: department,
+                        year: 1
+                    })
+                });
+                const data = await response.json();
+                result.className = 'result';
+                result.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function testChat(message) {
+            const result = document.getElementById('chat-result');
+            result.style.display = 'block';
+            result.innerHTML = `Processing: "${message}"...`;
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+                const data = await response.json();
+                result.className = 'result';
+                result.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
