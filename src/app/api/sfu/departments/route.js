@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import SFUApiService from '../../../../lib/apis/sfuApi.js';
-
-const sfuApi = new SFUApiService();
+import sfuApi from '@/lib/sfuApi';
 
 export async function GET() {
   try {
