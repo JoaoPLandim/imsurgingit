@@ -3,16 +3,18 @@
 ## Collections Overview
 
 ### users/
+
 ```
 users/{firebaseUid}/
 ├── email: string
-├── name: string  
+├── name: string
 ├── firebaseUid: string
 ├── createdAt: string (ISO date)
 └── updatedAt: string (ISO date)
 ```
 
 ### transcripts/
+
 ```
 transcripts/{transcriptId}/
 ├── fileName: string
@@ -25,6 +27,7 @@ transcripts/{transcriptId}/
 ```
 
 ### courses/
+
 ```
 courses/{courseId}/
 ├── courseCode: string (e.g., "CMPT 120")
@@ -35,6 +38,7 @@ courses/{courseId}/
 ```
 
 ### userCourses/
+
 ```
 userCourses/{userCourseId}/
 ├── userId: string (references users/{firebaseUid})
@@ -46,6 +50,7 @@ userCourses/{userCourseId}/
 ## Example Documents
 
 ### User Document
+
 ```json
 {
   "email": "john.doe@sfu.ca",
@@ -57,6 +62,7 @@ userCourses/{userCourseId}/
 ```
 
 ### Transcript Document
+
 ```json
 {
   "fileName": "transcript_2025.pdf",
@@ -70,6 +76,7 @@ userCourses/{userCourseId}/
 ```
 
 ### Course Document
+
 ```json
 {
   "courseCode": "CMPT 120",
@@ -81,6 +88,7 @@ userCourses/{userCourseId}/
 ```
 
 ### UserCourse Document
+
 ```json
 {
   "userId": "abc123xyz789",
