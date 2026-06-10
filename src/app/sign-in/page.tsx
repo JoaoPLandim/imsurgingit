@@ -9,32 +9,35 @@ export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        
+        setError("");
+
         try {
             await signIn(email, password);
-            alert("Sign in successful!");
             router.push("/planner");
-        } catch (error: any) {
-            switch (error.code) {
+        } catch (err) {
+            const code = (err as { code?: string }).code;
+            switch (code) {
                 case "auth/user-not-found":
-                    alert("No account found with that email.");
+                    setError("No account found with that email.");
                     break;
                 case "auth/wrong-password":
-                    alert("Incorrect password.");
+                case "auth/invalid-credential":
+                    setError("Invalid email or password.");
                     break;
                 case "auth/invalid-email":
-                    alert("Invalid email address.");
+                    setError("Invalid email address.");
                     break;
-                case "auth/invalid-credential":
-                    alert("Invalid email or password.");
+                case "auth/too-many-requests":
+                    setError("Too many attempts. Please try again later.");
                     break;
                 default:
-                    alert(error.message || "Sign in failed.");
+                    setError("Sign in failed. Please try again.");
             }
         } finally {
             setLoading(false);
@@ -49,6 +52,12 @@ export default function SignIn() {
                     <p className="text-muted-foreground">Welcome back to Uniplanner</p>
                 </div>
                 
+                {error && (
+                    <div role="alert" className="mb-4 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+                        {error}
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
@@ -91,7 +100,7 @@ export default function SignIn() {
                 
                 <div className="text-center mt-6">
                     <p className="text-muted-foreground text-sm">
-                        Don't have an account?{" "}
+                        Don&apos;t have an account?{" "}
                         <Link href="/sign-up" className="text-accent hover:text-primary transition-colors underline">
                             Sign up
                         </Link>

@@ -3,8 +3,9 @@ import sfuApi from '@/lib/sfuApi';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const year = searchParams.get('year') || '2024';
-  const term = searchParams.get('term') || 'fall';
+  const currentTerm = sfuApi.getCurrentTerm();
+  const year = searchParams.get('year') || currentTerm.year;
+  const term = searchParams.get('term') || currentTerm.term;
   const department = searchParams.get('department');
 
   if (!department) {

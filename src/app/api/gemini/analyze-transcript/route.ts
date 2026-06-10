@@ -1,26 +1,29 @@
 import { NextResponse } from "next/server";
-import { analyzeTranscript, analyzeTranscriptWithImage } from "@/lib/geminiService";
+import { analyzeTranscript, analyzeTranscriptFile } from "@/lib/geminiService";
+
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file') as File;
-    const text = formData.get('text') as string;
+    const file = formData.get("file") as File | null;
+    const text = formData.get("text") as string | null;
 
-    let analysis;
+    let analysis: string;
 
     if (file) {
-      // Handle file upload (image/PDF)
-      const bytes = await file.arrayBuffer();
-      const base64 = Buffer.from(bytes).toString('base64');
-      
-      if (file.type.startsWith('image/')) {
-        analysis = await analyzeTranscriptWithImage(base64, file.type);
+      if (file.size > 10 * 1024 * 1024) {
+        return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 413 });
+      }
+
+      if (file.type.startsWith("image/") || file.type === "application/pdf") {
+        // Gemini accepts images and PDFs directly as inline data
+        const bytes = await file.arrayBuffer();
+        const base64 = Buffer.from(bytes).toString("base64");
+        analysis = await analyzeTranscriptFile(base64, file.type);
       } else {
-        // For PDF/text files, you might need additional processing
-        // For now, we'll treat as text
-        const text = await file.text();
-        analysis = await analyzeTranscript(text);
+        const fileText = await file.text();
+        analysis = await analyzeTranscript(fileText);
       }
     } else if (text) {
       analysis = await analyzeTranscript(text);
@@ -29,10 +32,10 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ analysis });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error analyzing transcript:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to analyze transcript" },
+      { error: "Failed to analyze transcript. Please try again." },
       { status: 500 }
     );
   }
