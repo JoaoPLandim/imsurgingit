@@ -1,6 +1,9 @@
 'use client';
-import React, { useState } from "react";
-import Link from "next/link"; // Fix: was "link"
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type { User } from "firebase/auth";
+import { onAuthChange, logOut } from "@/lib/authService";
 
 interface Message {
   id: string;
@@ -30,6 +33,18 @@ export default function Planner() {
     const [inputMessage, setInputMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [transcriptAnalysis, setTranscriptAnalysis] = useState<TranscriptAnalysis | null>(null);
+    const [user, setUser] = useState<User | null>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        const unsubscribe = onAuthChange((currentUser: User | null) => setUser(currentUser));
+        return unsubscribe;
+    }, []);
+
+    const handleSignOut = async () => {
+        await logOut();
+        router.push("/");
+    };
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -73,7 +88,7 @@ export default function Planner() {
                         timestamp: new Date()
                     };
                     setMessages(prev => [...prev, newMessage]);
-                } catch (parseError) {
+                } catch {
                     const newMessage: Message = {
                         id: Date.now().toString(),
                         text: `📄 Transcript Analysis:\n\n${data.analysis}`,
@@ -82,8 +97,10 @@ export default function Planner() {
                     };
                     setMessages(prev => [...prev, newMessage]);
                 }
+            } else {
+                throw new Error(data.error || 'Analysis failed');
             }
-        } catch (error) {
+        } catch {
             const errorMessage: Message = {
                 id: Date.now().toString(),
                 text: "Sorry, I couldn't analyze the transcript. Please try again or paste the text directly.",
@@ -141,7 +158,7 @@ export default function Planner() {
                     timestamp: new Date()
                 };
                 setMessages(prev => [...prev, aiMessage]);
-            } catch (error) {
+            } catch {
                 const errorMessage: Message = {
                     id: (Date.now() + 1).toString(),
                     text: "Sorry, I'm experiencing technical difficulties. Please try again later.",
@@ -165,7 +182,32 @@ export default function Planner() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <div className="w-full max-w-4xl flex flex-col items-center">
-                <h1 className="text-5xl font-bold mb-8 text-center">Uniplanner</h1>
+                <div className="w-full flex items-center justify-between mb-8">
+                    <Link href="/" className="text-2xl font-bold no-underline">Uniplanner</Link>
+                    <div className="flex items-center gap-3 text-sm">
+                        {user ? (
+                            <>
+                                <span className="text-muted">{user.email}</span>
+                                <button
+                                    onClick={handleSignOut}
+                                    className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-secondary transition-colors"
+                                >
+                                    Sign Out
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <span className="text-muted">Browsing as guest</span>
+                                <Link
+                                    href="/sign-in"
+                                    className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-secondary transition-colors no-underline"
+                                >
+                                    Sign In
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </div>
                 <div className="bg-card border border-border rounded-lg shadow-lg p-8 w-full">
                     <div className="text-center mb-6">
                         <div className="flex flex-col items-center gap-4">

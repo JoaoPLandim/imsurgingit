@@ -13,36 +13,38 @@ export default function SignUp() {
         password: "",
     });
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
     const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ 
-            ...formData, 
-            [e.target.name]: e.target.value 
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
         });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        
+        setError("");
+
         try {
-            const result = await signUp(formData.email, formData.password, formData.name, formData.surname);
-            alert("Sign up successful!");
+            await signUp(formData.email, formData.password, formData.name, formData.surname);
             router.push("/planner");
-        } catch (error: any) {
-            switch (error.code) {
+        } catch (err) {
+            const code = (err as { code?: string }).code;
+            switch (code) {
                 case "auth/email-already-in-use":
-                    alert("Email is already in use.");
+                    setError("Email is already in use.");
                     break;
                 case "auth/invalid-email":
-                    alert("Invalid email address.");
+                    setError("Invalid email address.");
                     break;
                 case "auth/weak-password":
-                    alert("Password is too weak.");
+                    setError("Password is too weak. Use at least 6 characters.");
                     break;
                 default:
-                    alert(error.message || "Sign up failed.");
+                    setError("Sign up failed. Please try again.");
             }
         } finally {
             setLoading(false);
@@ -57,6 +59,12 @@ export default function SignUp() {
                     <p className="text-muted-foreground">Join Uniplanner today</p>
                 </div>
                 
+                {error && (
+                    <div role="alert" className="mb-4 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+                        {error}
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
@@ -114,10 +122,11 @@ export default function SignUp() {
                             id="password"
                             name="password"
                             type="password"
-                            placeholder="Create a password"
+                            placeholder="Create a password (min. 6 characters)"
                             value={formData.password}
                             onChange={handleChange}
                             required
+                            minLength={6}
                             className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
                         />
                     </div>

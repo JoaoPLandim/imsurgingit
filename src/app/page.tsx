@@ -20,9 +20,9 @@ export default function Home() {
               Sign In
             </Link>
           </div>
-          <a href="#" className="text-muted hover:text-foreground transition underline underline-offset-4 text-center">
+          <Link href="/planner" className="text-muted hover:text-foreground transition underline underline-offset-4 text-center">
             Continue as Guest
-          </a>
+          </Link>
         </div>
       </main>
       </div>

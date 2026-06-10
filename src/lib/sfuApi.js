@@ -29,8 +29,9 @@ export class SFUApiService {
         return await this.makeRequest(url);
     }
 
-    async getCourses(year = '2024', term = 'fall', department) {
-        const url = `${this.baseUrl}?${year}/${term}/${department}`;
+    async getCourses(year, term, department) {
+        const current = this.getCurrentTerm();
+        const url = `${this.baseUrl}?${year || current.year}/${term || current.term}/${department}`;
         return await this.makeRequest(url);
     }
 
@@ -63,4 +64,5 @@ export class SFUApiService {
     }
 }
 
-export default new SFUApiService();
+const sfuApi = new SFUApiService();
+export default sfuApi;
